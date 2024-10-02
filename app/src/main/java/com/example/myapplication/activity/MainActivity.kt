@@ -2,24 +2,20 @@ package com.example.myapplication.activity
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
+import com.example.myapplication.Adapter.BrandAdapter
+import com.example.myapplication.Adapter.PopularAdapter
 import com.example.myapplication.Model.SliderModel
-import com.example.myapplication.R
-import com.example.myapplication.SliderAdapter
+import com.example.myapplication.Adapter.SliderAdapter
 import com.example.myapplication.ViewModel.MainViewModel
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.example.myapplication.ui.theme.MyApplicationTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseActivity() {
     private val viewModel = MainViewModel()
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,13 +24,15 @@ class MainActivity : ComponentActivity() {
         setContentView(binding.root)
 
         initBanner()
+        initBrand()
+        initPopular()
     }
 
     private fun initBanner() {
         binding.progressBarBanner.visibility = View.VISIBLE
         viewModel.banners.observe(this, Observer { items ->
             banners(items)
-            binding.progressBarBanner.visibility=View.GONE
+            binding.progressBarBanner.visibility = View.GONE
         })
         viewModel.loadBanners()
     }
@@ -55,5 +53,29 @@ class MainActivity : ComponentActivity() {
             binding.dotIndicator.attachTo(binding.viewpagerSlider)
         }
     }
+
+    private fun initBrand() {
+
+        binding.progressBarBrand.visibility = View.VISIBLE
+        viewModel.brands.observe(this, Observer {
+            binding.viewBrand.layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            binding.viewBrand.adapter = BrandAdapter(it)
+            binding.progressBarBrand.visibility = View.GONE
+        })
+        viewModel.loadBrand()
+    }
+
+    private fun initPopular() {
+
+        binding.progressBarPopular.visibility = View.VISIBLE
+        viewModel.popular.observe(this, Observer {
+            binding.viewPopular.layoutManager = GridLayoutManager(this@MainActivity, 2)
+            binding.viewPopular.adapter = PopularAdapter(it)
+            binding.progressBarPopular.visibility = View.GONE
+        })
+        viewModel.loadPupolar()
+    }
+
 }
 
